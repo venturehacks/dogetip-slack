@@ -1,3 +1,5 @@
+# encoding: utf-8
+#
 require 'sinatra'
 require "sinatra/json"
 require 'bitcoin-client'
@@ -16,7 +18,8 @@ post "/tip" do
     command.perform
     json command.result
   rescue Exception => ex
-    json text: "so error: #{ex.message}", icon_emoji: ":japanese_goblin:"
+    puts "#{ex.message}: #{ex.backtrace.join("\n")}"
+    json text: "so error: #{ex.message}"
   end
 end
 

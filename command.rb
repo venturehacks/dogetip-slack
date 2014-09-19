@@ -1,7 +1,10 @@
+# encoding: utf-8
+#
 require 'bitcoin-client'
 require './bitcoin_client_extensions.rb'
+require 'httparty'
 class Command
-  attr_accessor :result, :action, :user_name, :icon_emoji
+  attr_accessor :result, :action, :user_name
   ACTIONS = %w(balance info deposit tip withdraw networkinfo)
   def initialize(slack_params)
     text = slack_params['text']
@@ -25,14 +28,24 @@ class Command
     @client ||= Bitcoin::Client.local('dogecoin')
   end
 
+  def usd(amount)
+    unless @rate && (@last_usd_check + 60 * 10) > Time.now.to_i
+      @rate = HTTParty.get('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=182')['return']['markets']['DOGE']['lasttradeprice'].to_f
+      @last_usd_check = Time.now.to_i
+    end
+
+    (@rate * amount).round(3)
+  rescue
+    '???'
+  end 
+
   def balance
     balance = client.getbalance(@user_id)
-    @result[:text] = "@#{@user_name} such balance #{balance}Ð"
+    @result[:text] = "@#{@user_name} such balance #{balance}Ð ($#{usd(balance)})"
     if (balance > 0)
       @result[:text] += " many coin"
     elsif balance > 1000
       @result[:text] += " very wealth!"
-      @result[:icon_emoji] = ":moneybag:"
     end
 
   end
@@ -49,26 +62,8 @@ class Command
     set_amount
 
     tx = client.sendfrom @user_id, user_address(target_user), @amount
-    @result[:text] = "such generous! <@#{@user_id}> => <@#{target_user}> #{@amount}Ð"
-    @result[:attachments] = [{
-      fallback:"<@#{@user_id}> => <@#{target_user}> #{@amount}Ð",
-      color: "good",
-      fields: [{
-        title: "such tipping #{@amount}Ð wow!",
-        value: "http://dogechain.info/tx/#{tx}",
-        short: false
-      },{
-        title: "generous shibe",
-        value: "<@#{@user_id}>",
-        short: true
-      },{
-        title: "lucky shibe",
-        value: "<@#{target_user}>",
-        short: true
-      }]
-    }] 
-    
-    @result[:text] += " (<http://dogechain.info/tx/#{tx}|such blockchain>)"
+    @result[:text] = "<@#{@user_id}> => <@#{target_user}> #{@amount}Ð ($#{usd(@amount)}) wow"
+    @result[:text] += " (<http://dogechain.info/tx/#{tx}|very verify>)"
   end
 
   alias :":dogecoin:" :tip
@@ -78,13 +73,11 @@ class Command
     set_amount
     tx = client.sendfrom @user_id, address, @amount
     @result[:text] = "such stingy <@#{@user_id}> => #{address} #{@amount}Ð (#{tx})"
-    @result[:icon_emoji] = ":shit:"
   end
 
   def networkinfo
     info = client.getinfo
     @result[:text] = info.to_s
-    @result[:icon_emoji] = ":bar_chart:"
   end
 
   private
@@ -92,8 +85,9 @@ class Command
   def set_amount
     @amount = @params.shift
     randomize_amount if (@amount == "random")
+    @amount = @amount.to_i
     
-    raise "so poor not money many sorry" unless available_balance >= @amount + 1
+    raise "so poor not money many sorry" unless available_balance >= @amount.to_i + 1
     raise "such stupid no purpose" if @amount < 10
   end
 
@@ -101,7 +95,6 @@ class Command
     lower = [1, @params.shift.to_i].min
     upper = [@params.shift.to_i, available_balance].max
     @amount = rand(lower..upper)
-    @result[:icon_emoji] = ":black_joker:"
   end
 
   def available_balance
@@ -116,5 +109,4 @@ class Command
       @address = client.getnewaddress(user_id)
     end
   end
-
 end
