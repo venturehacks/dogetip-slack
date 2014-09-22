@@ -3,9 +3,12 @@
 require 'bitcoin-client'
 require './bitcoin_client_extensions.rb'
 require 'httparty'
+require 'sqlite3'
+require 'active_support/core_ext/string/inflections'
+
 class Command
   attr_accessor :result, :action, :user_name
-  ACTIONS = %w(balance info deposit tip withdraw networkinfo)
+  ACTIONS = %w(balance info deposit tip withdraw networkinfo learn)
   def initialize(slack_params)
     text = slack_params['text']
     @params = text.split(/\s+/)
@@ -14,6 +17,7 @@ class Command
     @user_id = slack_params['user_id']
     @action = @params.shift
     @result = {}
+    @db = SQLite3::Database.new File.join(File.dirname(__FILE__), "doge.db")
   end
 
   def perform
@@ -24,20 +28,22 @@ class Command
     end
   end
 
+  def learn
+    item  = @params.shift 
+    value = @params.shift
+
+    puts item, value
+
+    raise "value must be in USD" unless value =~ /^\$\d*\.?\d+/
+
+    @db.execute "DELETE FROM conversions WHERE name = ?", item
+    @db.execute "INSERT INTO conversions VALUES (?, ?)", item, value[1..-1]
+    @result[:text] = "okay, one #{item} = #{value}"
+  end
+
   def client
     @client ||= Bitcoin::Client.local('dogecoin')
   end
-
-  def usd(amount)
-    unless @rate && (@last_usd_check + 60 * 10) > Time.now.to_i
-      @rate = HTTParty.get('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=182')['return']['markets']['DOGE']['lasttradeprice'].to_f
-      @last_usd_check = Time.now.to_i
-    end
-
-    (@rate * amount).round(3)
-  rescue
-    '???'
-  end 
 
   def balance
     balance = client.getbalance(@user_id)
@@ -82,13 +88,37 @@ class Command
 
   private
 
+  def usd(amount)
+    (usd_rate * amount).round(3)
+  end 
+
+  def usd_rate
+    unless @usd_rate && (@last_usd_check + 60 * 10) > Time.now.to_i
+      @usd_rate = HTTParty.get('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=182')['return']['markets']['DOGE']['lasttradeprice'].to_f
+      @last_usd_check = Time.now.to_i
+    end
+    @usd_rate
+  rescue
+    0
+  end
+
   def set_amount
     @amount = @params.shift
     randomize_amount if (@amount == "random")
     @amount = @amount.to_i
+
+    type = @params.shift
+    if type
+      begin
+        usd_value = @db.execute "SELECT usd_value FROM conversions WHERE name = ?", type.singularize
+        puts usd_value[0][0], @amount, usd_rate
+        @amount = (@amount * usd_value[0][0] / usd_rate).to_i
+      rescue # Conversion not in DB, assume ammount is DOGE
+      end 
+    end
     
-    raise "so poor not money many sorry" unless available_balance >= @amount.to_i + 1
-    raise "such stupid no purpose" if @amount < 10
+    raise "very poor, such balance: #{available_balance}Ð" unless available_balance >= @amount.to_i + 1
+    raise "wow. 10 doge minimum" if @amount < 10
   end
 
   def randomize_amount
