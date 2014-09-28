@@ -14,20 +14,26 @@ module DogetipSlack
         elsif public?
           raise PrivateCommand
         elsif docs = Commands.docs(command)
-          [].tap do |response|
-            if docs[:usage]
-              response << "*Usage*: #{docs[:usage]}"
-            end
-
-            if docs[:examples]
-              response << "*Example*: #{docs[:examples].map {|ex| '"' + ex + '"'}.join(', ')}"
-            end
-
-            response << "*Description*: #{docs[:description]}"
-          end.join "\n"
+          format_docs docs
         else
           "I don't know of *#{command}*. Sorry."
         end
+      end
+
+      private
+      
+      def format_docs(docs)
+        [].tap do |response|
+          if docs[:usage]
+            response << "*Usage*: #{docs[:usage]}"
+          end
+
+          if docs[:examples]
+            response << "*Example*: #{docs[:examples].map {|ex| '"' + ex + '"'}.join(', ')}"
+          end
+
+          response << "*Description*: #{docs[:description]}"
+        end.join "\n"
       end
     end
   end
