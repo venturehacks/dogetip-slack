@@ -8,21 +8,22 @@ module DogetipSlack
       def perform
         command = @parts[0]
 
-        if command.nil?
-          available_commands = Commands.list.map {|command| "_#{command}_"}
-          "Such commands: #{available_commands.join ', '}. Use *help <command>* for more info."
-        elsif public?
-          raise PrivateCommand
-        elsif docs = Commands.docs(command)
-          format_docs docs
-        else
-          "I don't know of *#{command}*. Sorry."
+        case
+          when command.nil? then available_commands
+          when public? then raise PrivateCommand
+          when docs = Commands.docs(command) then single_command(docs)
+          else "I don't know how to _#{command}_. Sorry."
         end
       end
 
       private
+
+      def available_commands
+        commands = Commands.list.map {|command| "_#{command}_"}
+        "Such commands: #{commands.join ', '}. Use *help <command>* for more info."
+      end
       
-      def format_docs(docs)
+      def single_command(docs)
         [].tap do |response|
           if docs[:usage]
             response << "*Usage*: #{docs[:usage]}"
