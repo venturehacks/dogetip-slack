@@ -12,8 +12,12 @@ module DogetipSlack
       /<@(U.+)>/.match(string)[1] rescue nil
     end
 
-    def tx_link(tx)
-      link_to 'very verify', "http://dogechain.info/tx/#{tx}"
+    def txn_link_address(txn)
+      "http://dogechain.info/tx/#{txn}"
+    end
+
+    def txn_link(txn)
+      link_to 'very verify', txn_link_address(txn)
     end
 
     def address_link(address)

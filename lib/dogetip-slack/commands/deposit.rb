@@ -6,7 +6,7 @@ module DogetipSlack
                              call will return a new address. Old addresses can be reused forever.'
 
       def perform
-        source_user.receive_address
+        "send many coins to #{source_user.receive_address}"
       end
     end
   end

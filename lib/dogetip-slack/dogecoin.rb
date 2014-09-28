@@ -5,12 +5,15 @@ module DogetipSlack
   class Dogecoin
     class << self
       def establish_connection
+        raise "DOGECOIN_USER must be set!" if ENV['DOGECOIN_USER'].nil?
+        raise "DOGECOIN_PASSWORD must be set!" if ENV['DOGECOIN_PASSWORD'].nil?
+
         @client = Bitcoin::Client.new ENV["DOGECOIN_USER"], ENV["DOGECOIN_PASSWORD"],
                                       host: '127.0.0.1', port: 22555, ssl: false
       end
 
       # Any way to get this from the API?
-      def tx_fee
+      def txn_fee
         1
       end
 

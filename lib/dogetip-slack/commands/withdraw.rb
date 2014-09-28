@@ -7,9 +7,13 @@ module DogetipSlack
         description: 'Withdraws the specified amount of DOGE from your account to the address given.'
 
       def perform
-        tx = source_user.send_coins address, amount
+        txn = source_user.send_coins address, amount
 
-        "such banking #{user_link(source_user)} => #{address_link(address)} #{amount}Ð ($#{usd(amount)}) #{tx_link(tx)}"
+        if public?
+          "such banking #{user_link(source_user)} => #{address_link(address)} #{amount}Ð ($#{usd(amount)}) #{txn_link(txn)}"
+        else
+          "such banking #{user_link(source_user)} => #{address} #{amount}Ð ($#{usd(amount)}) #{txn_link_address(txn)}"
+        end
       end
 
       private

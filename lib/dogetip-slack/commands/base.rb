@@ -7,7 +7,7 @@ module DogetipSlack
       include Util
       extend Memoist
 
-      attr_reader :username, :user_id, :parts, :private
+      attr_reader :username, :user_id, :parts, :channel
 
       def self.document(command, info_hash)
         Commands.add command, info_hash.merge(klass: self)
@@ -17,7 +17,7 @@ module DogetipSlack
         @username = params[:username]
         @user_id  = params[:user_id]
         @parts    = params[:parts]
-        @private  = params[:private]
+        @channel  = params[:channel]
       end
 
       def execute
@@ -36,11 +36,11 @@ module DogetipSlack
       private
 
       def private?
-        !!self.private
+        channel.nil?
       end
 
       def public?
-        !self.private
+        channel.present?
       end
 
       # If we see a new user using the bot, let's make sure they're in the DB.

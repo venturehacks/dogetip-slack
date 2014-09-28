@@ -1,5 +1,8 @@
 module DogetipSlack
   class User < ActiveRecord::Base
+    has_many :outgoing_tips, :class_name => 'TipTransaction', :foreign_key => :sender_id
+    has_many :incoming_tips, :class_name => 'TipTransaction', :foreign_key => :recipient_id
+
     def balance
       Dogecoin.getbalance slack_id
     end
@@ -16,7 +19,7 @@ module DogetipSlack
     private
 
     def check_available_balance!(amount)
-      raise InsufficientFunds unless balance > amount + Dogecoin.tx_fee
+      raise InsufficientFunds unless balance >= amount + Dogecoin.txn_fee
     end
   end
 end
