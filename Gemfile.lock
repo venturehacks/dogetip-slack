@@ -1,17 +1,34 @@
-GEM
-  remote: https://rubygems.org/
+GIT
+  remote: https://github.com/joshuaxls/cinch.git
+  revision: a2774727eaad186ac33a9e6eac29b917b1fc5032
   specs:
+    cinch (2.1.0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    activemodel (3.2.19)
+      activesupport (= 3.2.19)
+      builder (~> 3.0.0)
+    activerecord (3.2.19)
+      activemodel (= 3.2.19)
+      activesupport (= 3.2.19)
+      arel (~> 3.0.2)
+      tzinfo (~> 0.3.29)
     activesupport (3.2.19)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
+    arel (3.0.3)
     backports (3.6.0)
     bitcoin-client (0.0.3)
       rest-client
+    builder (3.0.4)
     diff-lcs (1.2.5)
     httparty (0.11.0)
       multi_json (~> 1.0)
       multi_xml (>= 0.5.2)
     i18n (0.6.11)
+    memoist (0.10.0)
     mime-types (2.2)
     multi_json (1.9.0)
     multi_xml (0.5.5)
@@ -43,14 +60,18 @@ GEM
       tilt (~> 1.3)
     sqlite3 (1.3.9)
     tilt (1.4.1)
+    tzinfo (0.3.41)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord (= 3.2.19)
   activesupport (= 3.2.19)
   bitcoin-client
+  cinch!
   httparty (= 0.11)
+  memoist
   rspec
   sinatra
   sinatra-contrib
