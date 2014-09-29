@@ -1,0 +1,16 @@
+# Sample config file. Copy to config.yml and copy in your real values.
+
+# The RPC user and password for your dogecoind instance. Required to communicate with the underlying wallet.
+dogecoind:
+  user:
+  password:
+
+# Your Slack API token. This ensures that incoming messages are actually from Slack, and not a random person who
+# has discovered your webhook endpoint.
+webhook:
+  api_token:
+
+# Your Slack environment's IRC server and password. Read more at: https://yourdomain.slack.com/account/gateways
+irc:
+  server:
+  password:

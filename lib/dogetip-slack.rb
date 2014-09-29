@@ -25,4 +25,10 @@ module DogetipSlack
   end
 end
 
+begin
+  CONFIG = YAML::load_file File.join(DOGETIP_ROOT, 'config.yml')
+rescue
+  raise "Error loading config file: #{File.join(DOGETIP_ROOT, 'config.yml')}"
+end
+
 DogetipSlack.setup_connections

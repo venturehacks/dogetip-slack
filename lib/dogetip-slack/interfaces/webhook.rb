@@ -5,7 +5,7 @@ module DogetipSlack
   module Interfaces
     class Webhook < Sinatra::Base
       def run!
-        raise "SLACK_API_TOKEN must be set!" if ENV['SLACK_API_TOKEN'].nil?
+        raise "['webhook']['api_token'] must be set in config.yml!" if CONFIG['webhook']['api_token'].nil?
         super
       end
 
@@ -13,7 +13,7 @@ module DogetipSlack
 
       post "/tip" do
         puts params
-        next unless params['token'] == ENV['SLACK_API_TOKEN']
+        next unless params['token'] == CONFIG['webhook']['api_token']
 
         parts   = params['text'].split[1..-1]
         command = parts.shift

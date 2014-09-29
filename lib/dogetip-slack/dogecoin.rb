@@ -5,10 +5,10 @@ module DogetipSlack
   class Dogecoin
     class << self
       def establish_connection
-        raise "DOGECOIN_USER must be set!" if ENV['DOGECOIN_USER'].nil?
-        raise "DOGECOIN_PASSWORD must be set!" if ENV['DOGECOIN_PASSWORD'].nil?
+        raise "['dogecoind']['user'] must be set in config.yml!" if CONFIG['dogecoind']['user'].nil?
+        raise "['dogecoind']['password'] must be set in config.yml!" if CONFIG['dogecoind']['password'].nil?
 
-        @client = Bitcoin::Client.new ENV["DOGECOIN_USER"], ENV["DOGECOIN_PASSWORD"],
+        @client = Bitcoin::Client.new CONFIG['dogecoind']['user'], CONFIG['dogecoind']['password'],
                                       host: '127.0.0.1', port: 22555, ssl: false
       end
 

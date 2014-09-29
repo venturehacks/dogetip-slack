@@ -6,8 +6,10 @@ module DogetipSlack
                examples: ['tip @someone 100', 'tip @someone 2 beers', 'tip @someone 100 for being awesome'],
                description: 'Sends a tip to the target user.'
 
+      attr_accessor :txn_id, :original_amount
+
       def perform
-        @txn_id = source_user.send_coins target_user.receive_address, doge_amount
+        self.txn_id = source_user.send_coins target_user.receive_address, doge_amount
         record_transaction!
 
         {to: target_user.username, message: message, reply: reply}
@@ -22,7 +24,7 @@ module DogetipSlack
       def reply
         string = ["#{user_link(source_user)} => #{user_link(target_user)}"]
         string << "#{doge_amount}Ð ($#{usd(doge_amount)}) wow"
-        string << (public? ? txn_link(@txn_id) : txn_link_address(@txn_id))
+        string << (public? ? txn_link(txn_id) : txn_link_address(txn_id))
         string.join ' '
       end
       memoize :reply
@@ -37,11 +39,11 @@ module DogetipSlack
       AMOUNT_INDEX = 1
       def doge_amount
         raise BadArgument.new("amount") unless valid_amount?(parts[AMOUNT_INDEX])
-        @original_amount = parts[AMOUNT_INDEX].to_i
+        self.original_amount = parts[AMOUNT_INDEX].to_i
         amount = if unit
-          (@original_amount * unit.usd_value / usd_rate).to_i
+          (original_amount * unit.usd_value / usd_rate).to_i
         else
-          @original_amount
+          original_amount
         end
 
         # Validations. Perhaps this should go elsewhere?
@@ -100,11 +102,11 @@ module DogetipSlack
         tip.usd_amount  = usd(doge_amount)
         tip.channel     = channel
         tip.reason      = reason
-        tip.txn_id      = @txn_id
+        tip.txn_id      = txn_id
 
         if unit
           tip.unit        = unit
-          tip.unit_amount = @original_amount
+          tip.unit_amount = original_amount
         end
 
         tip.save

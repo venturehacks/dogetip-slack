@@ -5,13 +5,13 @@ module DogetipSlack
   module Interfaces
     class IRC
       def self.run!
-        raise "IRC_SERVER must be set!" if ENV['IRC_SERVER'].nil?
-        raise "IRC_PASSWORD must be set!" if ENV['IRC_PASSWORD'].nil?
+        raise "['irc']['server'] must be set in config.yml!" if CONFIG['irc']['server'].nil?
+        raise "['irc']['password'] must be set!" if CONFIG['irc']['password'].nil?
 
         bot = Cinch::Bot.new do
           configure do |c|
-            c.server      = ENV['IRC_SERVER']
-            c.password    = ENV['IRC_PASSWORD']
+            c.server      = CONFIG['irc']['server']
+            c.password    = CONFIG['irc']['password']
             c.nick        = 'doge'
             c.delay_joins = 10
 
