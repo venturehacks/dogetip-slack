@@ -62,7 +62,7 @@ module DogetipSlack
       UNIT_INDEX = 2
       def unit
         max = parts.index('for') || parts.length - 1
-        return nil if max == UNIT_INDEX
+        return nil if max < UNIT_INDEX
 
         UNIT_INDEX.upto(max) do |step|
           name_parts = parts[UNIT_INDEX..step]
