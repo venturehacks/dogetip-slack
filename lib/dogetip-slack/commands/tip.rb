@@ -17,13 +17,17 @@ module DogetipSlack
 
       private
 
+      # What's sent privately to the receiving user, if this is a private tip.
       def message
         [reply, reason.present? ? "for #{reason}" : nil].compact.join("\n")
       end
 
+      # What's sent publicly (in a channel), or sent privately to the sending user.
       def reply
         string = ["#{user_link(source_user)} => #{user_link(target_user)}"]
-        string << "#{doge_amount}Ð ($#{usd(doge_amount)}) wow"
+        string << "#{doge_amount}Ð"
+        string << "(#{original_amount} #{unit.name.pluralize(original_amount)})" unless unit.nil?
+        string << "wow"
         string << (public? ? txn_link(txn_id) : txn_link_address(txn_id))
         string.join ' '
       end
