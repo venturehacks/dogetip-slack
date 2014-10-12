@@ -7,7 +7,7 @@ module DogetipSlack
 
       def perform
         # Get the user's balance in USD
-        user_balance = 100.0#usd(source_user.balance)
+        user_balance = usd(source_user.balance)
 
         # Create a list of all the items that the user can purchase
         amount_left = user_balance
