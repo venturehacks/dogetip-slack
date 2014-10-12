@@ -1,15 +1,23 @@
 require 'sinatra/base'
 require 'sinatra/json'
+require "sinatra/config_file"
 
 module DogetipSlack
   module Interfaces
     class Webhook < Sinatra::Base
+      register Sinatra::ConfigFile
+      config_file '../../../config.yml'
+
       def run!
         raise "['webhook']['api_token'] must be set in config.yml!" if CONFIG['webhook']['api_token'].nil?
         super
       end
 
-      set :port, 4567
+      set :port, settings.port || 4567
+
+      get "/test" do
+        'Hello World!'
+      end
 
       post "/tip" do
         puts params
