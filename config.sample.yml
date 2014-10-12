@@ -1,5 +1,8 @@
 # Sample config file. Copy to config.yml and copy in your real values.
 
+# Configure the port you'd like to use for dogetip.
+port: 4567
+
 # The RPC user and password for your dogecoind instance. Required to communicate with the underlying wallet.
 dogecoind:
   user:
