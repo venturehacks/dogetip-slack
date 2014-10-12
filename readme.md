@@ -27,6 +27,22 @@
 7. [Optional] Set up localtunnel.me so you can test your local development environment's integration with Slack.
 
   `lt --subdomain <your subdomain; e.g. mpdoge> --port <your port; e.g. 5678>`
+
+8. [Optional] Set up your development console with useful aliases [1]:
+
+  ```
+  alias such=git
+  alias very=git
+  alias wow='git status'
+  ```
+
+  This will streamline development. e.g.
+
+  ```
+  $ wow
+  $ such commit
+  $ very push
+  ```
   
 
 # Commands
@@ -55,3 +71,11 @@
 # Security
 
 ## This runs an unencrypted hot wallet on your server.  ***This is not even close to secure.***  You should not store significant amounts of dogecoin in this wallet.  Withdraw your tips to an offline wallet often. 
+
+# Developer resources
+
+[A Linguist's Guide to Doge](http://the-toast.net/2014/02/06/linguist-explains-grammar-doge-wow/)
+
+# References
+
+[1] [https://imgur.com/UQAKbmN](https://imgur.com/UQAKbmN)
