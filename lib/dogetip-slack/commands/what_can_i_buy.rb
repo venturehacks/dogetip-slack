@@ -11,7 +11,7 @@ module DogetipSlack
 
         # Create a list of all the items that the user can purchase
         amount_left = user_balance
-        to_buy = Unit.order(usd_value: :desc).map do |unit|
+        to_buy = Unit.all.sort_by(&:usd_value).reverse.map do |unit|
           num_units = (amount_left / unit.usd_value).floor
           amount_left -= num_units * unit.usd_value
           [num_units, unit]
@@ -21,11 +21,12 @@ module DogetipSlack
           sentence = "much rich. so can buy. amaze:\n"
 
           to_buy.each do |num, unit|
-            sentence += "\n * #{num} #{unit.name}#{num > 1 ? 's' : ''}" # Insufficiently detailed pluralization...
+            sentence += "\n * #{num} #{unit.name.pluralize(num)}" # Insufficiently detailed pluralization...
           end
 
+          sentence
         else
-          sentence += 'no coins. no buy. very empathy.'
+          'no coins. no buy. very empathy.'
         end
       end
     end
