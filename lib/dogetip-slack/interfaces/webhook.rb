@@ -15,6 +15,9 @@ module DogetipSlack
 
       set :port, settings.port || 4567
 
+      # Bind to all interfaces. Is this a security issue?
+      set :bind, '0.0.0.0'
+
       get "/test" do
         'Hello World!'
       end
