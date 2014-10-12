@@ -18,9 +18,15 @@
   2. Set the trigger word: we use "dogetipper" but doesn't matter what you pick
   3. Set the Url to the server you'll be deploying on http://example.com:4567/tip
 
-4. Launch the server!
+5. Set up your config.yml file
 
-  `DOGECOIN_USER=rpcuser DOGECOIN_PASSWORD=rpcpassword SLACK_API_TOKEN=YOURSLACKTOKENHERE bundle exec ruby tipper.rb -p 4567`
+6. Launch the server!
+
+  `bundle exec ruby dogetip.rb webook`
+
+7. [Optional] Set up localtunnel.me so you can test your local development environment's integration with Slack.
+
+  `lt --subdomain <your subdomain; e.g. mpdoge> --port <your port; e.g. 5678>`
   
 
 # Commands
