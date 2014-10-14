@@ -61,8 +61,8 @@ module DogetipSlack
       # find a unit that's in the DB. Should this move into Models::Unit?
       UNIT_INDEX = 2
       def unit
-        max = parts.index('for') || parts.length - 1
-        return nil if max < UNIT_INDEX
+        max = parts.length - 1
+        return nil if parts[UNIT_INDEX] == 'for' || max < UNIT_INDEX
 
         UNIT_INDEX.upto(max) do |step|
           name_parts = parts[UNIT_INDEX..step]
